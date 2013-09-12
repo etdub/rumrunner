@@ -24,4 +24,5 @@ if __name__ == '__main__':
   m = Bootlegger('/var/tmp/metric_socket', 'test.app')
   for x in range(10):
     m.counter('test_counter', 1)
+    m.gauge('test_gauge', x)
     time.sleep(1)
