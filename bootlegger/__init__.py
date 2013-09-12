@@ -2,7 +2,7 @@ import time
 import ujson
 import zmq
 
-class Smuggler(object):
+class Bootlegger(object):
   def __init__(self, metric_socket, app_name):
     self.metric_socket = metric_socket
     self.app_name = app_name
@@ -21,7 +21,7 @@ class Smuggler(object):
     self.send_socket.send(ujson.dumps([self.app_name, metric_name, 'GAUGE', value]))
 
 if __name__ == '__main__':
-  m = Smuggler('/var/tmp/metric_socket', 'test.app')
+  m = Bootlegger('/var/tmp/metric_socket', 'test.app')
   for x in range(10):
     m.counter('test_counter', 1)
     time.sleep(1)
