@@ -16,15 +16,21 @@ class Bootlegger(object):
 
   def counter(self, metric_name, value=1):
 
-    self.send_socket.send(ujson.dumps([self.app_name, metric_name, 'COUNTER',  value]))
+    try:
+      self.send_socket.send(ujson.dumps([self.app_name, metric_name, 'COUNTER',  value]), zmq.NOBLOCK)
+    except zmq.error.Again:
+      pass
 
   def gauge(self, metric_name, value):
-    self.send_socket.send(ujson.dumps([self.app_name, metric_name, 'GAUGE', value]))
+    try:
+      self.send_socket.send(ujson.dumps([self.app_name, metric_name, 'GAUGE', value]), zmq.NOBLOCK)
+    except zmq.error.Again:
+      pass
 
 if __name__ == '__main__':
   m = Bootlegger('/var/tmp/metric_socket', 'test.app')
-  for x in range(10):
-    print x
+  for x in range(1000):
+    if x % 100 == 0:
+      print x
     m.counter('test_counter', 1)
     m.gauge('test_gauge', x)
-    time.sleep(1)
