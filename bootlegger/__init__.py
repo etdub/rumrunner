@@ -12,6 +12,7 @@ class Bootlegger(object):
     # Send metrics
     self.send_socket = self.context.socket(zmq.PUSH)
     self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
+    self.send_socket.setsockopt(zmq.LINGER, 0)
 
   def counter(self, metric_name, value=1):
 
@@ -23,6 +24,7 @@ class Bootlegger(object):
 if __name__ == '__main__':
   m = Bootlegger('/var/tmp/metric_socket', 'test.app')
   for x in range(10):
+    print x
     m.counter('test_counter', 1)
     m.gauge('test_gauge', x)
     time.sleep(1)
