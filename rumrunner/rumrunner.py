@@ -2,7 +2,7 @@ import time
 import ujson
 import zmq
 
-class Bootlegger(object):
+class Rumrunner(object):
   def __init__(self, metric_socket, app_name):
     self.metric_socket = metric_socket
     self.app_name = app_name
@@ -28,7 +28,7 @@ class Bootlegger(object):
       pass
 
 if __name__ == '__main__':
-  m = Bootlegger('/var/tmp/metric_socket', 'test.app')
+  m = Rumrunner('/var/tmp/metric_socket', 'test.app')
   for x in range(1000):
     if x % 100 == 0:
       print x
