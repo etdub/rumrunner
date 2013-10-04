@@ -36,3 +36,4 @@ if __name__ == '__main__':
             print x
         m.counter('test_counter', 1)
         m.gauge('test_gauge', x)
+        m.percentile('test_percentile.', x)
