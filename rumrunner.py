@@ -26,14 +26,21 @@ class Rumrunner(object):
     def send(self, metric_name, value, metric_type):
         try:
             self.send_socket.send(ujson.dumps([self.app_name, metric_name, metric_type,  value]), zmq.NOBLOCK)
-        except zmq.error.Again:
+        except zmq.error.Again, e:
+            print e
             pass
+        except Exception, e:
+            print e
 
 if __name__ == '__main__':
     m = Rumrunner('/var/tmp/metric_socket', 'test.app')
+    s = time.time()
     for x in range(1000):
         if x % 100 == 0:
             print x
         m.counter('test_counter', 1)
         m.gauge('test_gauge', x)
         m.percentile('test_percentile.', x)
+        time.sleep(0.000001)
+    e = time.time()
+    print "Took {0:.3f}s".format(e-s)
