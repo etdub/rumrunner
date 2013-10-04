@@ -1,6 +1,9 @@
+import logging
 import time
 import ujson
 import zmq
+
+logger = logging.getLogger(__name__)
 
 class Rumrunner(object):
     def __init__(self, metric_socket, app_name):
@@ -27,10 +30,7 @@ class Rumrunner(object):
         try:
             self.send_socket.send(ujson.dumps([self.app_name, metric_name, metric_type,  value]), zmq.NOBLOCK)
         except zmq.error.Again, e:
-            print e
-            pass
-        except Exception, e:
-            print e
+            logging.warn("Metric socket error - {0}".format(e))
 
 if __name__ == '__main__':
     m = Rumrunner('/var/tmp/metric_socket', 'test.app')
