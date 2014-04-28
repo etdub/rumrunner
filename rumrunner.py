@@ -1,6 +1,12 @@
 import logging
 import time
-import ujson
+try:
+    import ujson as json
+except ImportError:
+    try:
+        import simplejson as json
+    except ImportError:
+        import json
 import zmq
 
 logger = logging.getLogger(__name__)
@@ -28,7 +34,7 @@ class Rumrunner(object):
 
     def send(self, metric_name, value, metric_type):
         try:
-            self.send_socket.send(ujson.dumps([self.app_name, metric_name, metric_type,  value]), zmq.NOBLOCK)
+            self.send_socket.send(json.dumps([self.app_name, metric_name, metric_type,  value]), zmq.NOBLOCK)
         except zmq.error.Again, e:
             logger.warn("Metric socket error - {0}".format(e))
 
