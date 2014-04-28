@@ -1,11 +1,12 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='rumrunner',
-    version='0.0.6',
+    version='0.0.7',
     description='Client to send metrics to Speakeasy server',
     author='Eric Wong',
     py_modules=['rumrunner'],
-    install_requires = [
+    install_requires=[
         'pyzmq',
-    ]
+        'simplejson',
+    ],
     )
