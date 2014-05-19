@@ -12,7 +12,7 @@ import zmq
 logger = logging.getLogger(__name__)
 
 class Rumrunner(object):
-    def __init__(self, metric_socket, app_name):
+    def __init__(self, metric_socket, app_name, hwm=1000):
         self.metric_socket = metric_socket
         self.app_name = app_name
 
@@ -20,6 +20,7 @@ class Rumrunner(object):
 
         # Send metrics
         self.send_socket = self.context.socket(zmq.PUSH)
+        self.send_socket.set_hwm(hwm)
         self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
         self.send_socket.setsockopt(zmq.LINGER, 0)
 
