@@ -11,10 +11,12 @@ import zmq
 
 logger = logging.getLogger(__name__)
 
+
 class Rumrunner(object):
-    def __init__(self, metric_socket, app_name, hwm=1000):
+    def __init__(self, metric_socket, app_name, hwm=5000, block=False):
         self.metric_socket = metric_socket
         self.app_name = app_name
+        self.block = block
 
         self.context = zmq.Context()
 
@@ -25,19 +27,25 @@ class Rumrunner(object):
         self.send_socket.setsockopt(zmq.LINGER, 0)
 
     def counter(self, metric_name, value=1):
-        self.send(metric_name, value, 'COUNTER')
+        return self.send(metric_name, value, 'COUNTER')
 
     def gauge(self, metric_name, value):
-        self.send(metric_name, value, 'GAUGE')
+        return self.send(metric_name, value, 'GAUGE')
 
     def percentile(self, metric_name, value):
-        self.send(metric_name, value, 'PERCENTILE')
+        return self.send(metric_name, value, 'PERCENTILE')
 
     def send(self, metric_name, value, metric_type):
         try:
-            self.send_socket.send(json.dumps([self.app_name, metric_name, metric_type,  value]), zmq.NOBLOCK)
-        except zmq.error.Again, e:
-            logger.warn("Metric socket error - {0}".format(e))
+            if self.block:
+              self.send_socket.send(json.dumps([self.app_name, metric_name, metric_type, value]))
+            else:
+              self.send_socket.send(json.dumps([self.app_name, metric_name, metric_type, value]), zmq.NOBLOCK)
+            return True
+        except zmq.error.Again as e:
+            # Failed to send message
+            logger.debug("Metric socket error - {0}".format(e))
+            return False
 
 if __name__ == '__main__':
     m = Rumrunner('/var/tmp/metric_socket', 'test.app')
