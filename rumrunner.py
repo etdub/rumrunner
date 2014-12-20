@@ -25,6 +25,14 @@ class Rumrunner(object):
         self.send_socket.set_hwm(hwm)
         self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
         self.send_socket.setsockopt(zmq.LINGER, 0)
+        self.test_socket_writable()
+
+    def test_socket_writable(self):
+        tracker = self.send_socket.send('', copy=False, track=True)
+        try:
+            tracker.wait(3)
+        except zmq.NotDone:
+            raise Exception('Metric socket not writable')
 
     def counter(self, metric_name, value=1):
         return self.send(metric_name, value, 'COUNTER')
@@ -37,10 +45,11 @@ class Rumrunner(object):
 
     def send(self, metric_name, value, metric_type):
         try:
+            datapoint = [self.app_name, metric_name, metric_type, value]
             if self.block:
-              self.send_socket.send(json.dumps([self.app_name, metric_name, metric_type, value]))
+                self.send_socket.send(json.dumps(datapoint))
             else:
-              self.send_socket.send(json.dumps([self.app_name, metric_name, metric_type, value]), zmq.NOBLOCK)
+                self.send_socket.send(json.dumps(datapoint), zmq.NOBLOCK)
             return True
         except zmq.error.Again as e:
             # Failed to send message

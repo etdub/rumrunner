@@ -3,3 +3,5 @@ dist
 MANIFEST
 *.egg-info
 *.pyc
+*.swp
+*.swn
