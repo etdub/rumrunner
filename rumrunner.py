@@ -1,5 +1,10 @@
 import logging
 import time
+
+
+__version__ = '0.1.0'
+
+
 try:
     import ujson as json
 except ImportError:
