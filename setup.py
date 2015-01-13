@@ -1,9 +1,8 @@
 from setuptools import setup
-import rumrunner
 
 setup(
     name='rumrunner',
-    version=rumrunner.__version__,
+    version='0.1.1',
     description='Client to send metrics to Speakeasy server',
     author='Eric Wong',
     py_modules=['rumrunner'],
