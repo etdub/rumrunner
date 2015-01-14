@@ -14,7 +14,7 @@ import zmq
 logger = logging.getLogger(__name__)
 
 
-class Rumrunner(object):
+class _Rumrunner(object):
     def __init__(self, metric_socket, app_name, hwm=5000, block=False):
         self.metric_socket = metric_socket
         self.app_name = app_name
@@ -57,6 +57,39 @@ class Rumrunner(object):
             # Failed to send message
             logger.debug("Metric socket error - {0}".format(e))
             return False
+
+
+class MockRumrunner(object):
+    def __init__(self, metric_socket, app_name, hwm=5000, block=False):
+        pass
+
+    def counter(self, metric_name, value=1):
+        pass
+
+    def gauge(self, metric_name, value):
+        pass
+
+    def percentile(self, metric_name, value):
+        pass
+
+    def send(self, metric_name, value, metric_type):
+        pass
+
+
+class Rumrunner(object):
+    RUMRUNNER_CLASS = _Rumrunner
+    def __init__(self, *args, **kwargs):
+        self = self.RUMRUNNER_CLASS(*args, **kwargs)
+
+
+def mock_rumrunner():
+    Rumrunner.RUMRUNNER_CLASS = MockRumrunner
+
+
+def unmock_rumrunner():
+    Rumrunner.RUMRUNNER_CLASS = _Rumrunner
+
+
 
 if __name__ == '__main__':
     m = Rumrunner('/var/tmp/metric_socket', 'test.app')
