@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Rumrunner(object):
     MOCK = False
 
-    def __init__(self, metric_socket, app_name, hwm=5000, block=False, check_socket=True):
+    def __init__(self, metric_socket, app_name, hwm=5000, block=False, strict_check_socket=True):
         self.metric_socket = metric_socket
         self.app_name = app_name
         self.block = block
@@ -29,8 +29,7 @@ class Rumrunner(object):
         self.send_socket.set_hwm(hwm)
         self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
         self.send_socket.setsockopt(zmq.LINGER, 0)
-        if check_socket:
-          self.test_socket_writable()
+        self.test_socket_writable(strict_check_socket)
 
     def __new__(cls, *args, **kwargs):
         if cls.MOCK:
@@ -38,12 +37,15 @@ class Rumrunner(object):
         else:
             return super(Rumrunner, cls).__new__(cls)
 
-    def test_socket_writable(self):
+    def test_socket_writable(self, strict):
         tracker = self.send_socket.send('', copy=False, track=True)
         try:
             tracker.wait(3)
         except zmq.NotDone:
-            raise Exception('Metric socket not writable')
+            if strict:
+                raise Exception('Metric socket not writable')
+            else:
+                logger.warn("Metric socket not writable")
 
     def counter(self, metric_name, value=1):
         return self.send(metric_name, value, 'COUNTER')

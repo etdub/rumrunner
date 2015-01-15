@@ -18,11 +18,11 @@ class TestRumrunner(unittest.TestCase):
         tmp_metric_socket = '/var/tmp/test_metric_{0}'.format(random.random())
         recv_socket.bind('ipc://{0}'.format(tmp_metric_socket))
 
-        Rumrunner(tmp_metric_socket, 'test_app', check_socket=False)
+        Rumrunner(tmp_metric_socket, 'test_app', strict_check_socket=False)
         os.chmod(tmp_metric_socket, 0444)
 
         # Should not raise an exception due to permissions
-        Rumrunner(tmp_metric_socket, 'test_app', check_socket=False)
+        Rumrunner(tmp_metric_socket, 'test_app', strict_check_socket=False)
 
         os.remove(tmp_metric_socket)
 
