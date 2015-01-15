@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 class Rumrunner(object):
     MOCK = False
 
-    def __init__(self, metric_socket, app_name, hwm=5000, block=False, strict_check_socket=True):
+    def __init__(self, metric_socket, app_name, hwm=5000, block=False,
+                 strict_check_socket=True):
         self.metric_socket = metric_socket
         self.app_name = app_name
         self.block = block
@@ -71,7 +72,7 @@ class Rumrunner(object):
 
 
 class MockRumrunner(object):
-    def __init__(self, metric_socket, app_name, hwm=5000, block=False):
+    def __init__(self, *args, **kwargs):
         pass
 
     def counter(self, metric_name, value=1):

@@ -40,12 +40,18 @@ class TestRumrunner(unittest.TestCase):
         os.remove(tmp_metric_socket)
 
     def test_mock_rumrunner(self):
-        from rumrunner import unmock_rumrunner, mock_rumrunner
-        self.assertEqual(Rumrunner.MOCK, False)
+        from rumrunner import unmock_rumrunner, mock_rumrunner, MockRumrunner
+        self.assertTrue(isinstance(Rumrunner('/var/tmp/test', 'test_app',
+                                             strict_check_socket=False),
+                                   Rumrunner))
         mock_rumrunner()
-        self.assertEqual(Rumrunner.MOCK, True)
+        self.assertTrue(isinstance(Rumrunner('/var/tmp/test', 'test_app',
+                                             strict_check_socket=False),
+                                   MockRumrunner))
         unmock_rumrunner()
-        self.assertEqual(Rumrunner.MOCK, False)
+        self.assertTrue(isinstance(Rumrunner('/var/tmp/test', 'test_app',
+                                             strict_check_socket=False),
+                                   Rumrunner))
 
 
 if __name__ == '__main__':
