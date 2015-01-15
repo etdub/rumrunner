@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Rumrunner(object):
     MOCK = False
 
-    def __init__(self, metric_socket, app_name, hwm=5000, block=False):
+    def __init__(self, metric_socket, app_name, hwm=5000, block=False, check_socket=True):
         self.metric_socket = metric_socket
         self.app_name = app_name
         self.block = block
@@ -29,7 +29,8 @@ class Rumrunner(object):
         self.send_socket.set_hwm(hwm)
         self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
         self.send_socket.setsockopt(zmq.LINGER, 0)
-        self.test_socket_writable()
+        if check_socket:
+          self.test_socket_writable()
 
     def __new__(cls, *args, **kwargs):
         if cls.MOCK:

@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='rumrunner',
-    version='0.3.0',
+    version='0.4.0',
     description='Client to send metrics to Speakeasy server',
     author='Eric Wong',
     py_modules=['rumrunner'],
