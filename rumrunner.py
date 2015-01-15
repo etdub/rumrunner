@@ -14,7 +14,9 @@ import zmq
 logger = logging.getLogger(__name__)
 
 
-class _Rumrunner(object):
+class Rumrunner(object):
+    MOCK = False
+
     def __init__(self, metric_socket, app_name, hwm=5000, block=False):
         self.metric_socket = metric_socket
         self.app_name = app_name
@@ -28,6 +30,12 @@ class _Rumrunner(object):
         self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
         self.send_socket.setsockopt(zmq.LINGER, 0)
         self.test_socket_writable()
+
+    def __new__(cls, *args, **kwargs):
+        if cls.MOCK:
+            return MockRumrunner(*args, **kwargs)
+        else:
+            return super(Rumrunner, cls).__new__(cls)
 
     def test_socket_writable(self):
         tracker = self.send_socket.send('', copy=False, track=True)
@@ -76,19 +84,12 @@ class MockRumrunner(object):
         pass
 
 
-class Rumrunner(object):
-    RUMRUNNER_CLASS = _Rumrunner
-    def __init__(self, *args, **kwargs):
-        self = self.RUMRUNNER_CLASS(*args, **kwargs)
-
-
 def mock_rumrunner():
-    Rumrunner.RUMRUNNER_CLASS = MockRumrunner
+    Rumrunner.MOCK = True
 
 
 def unmock_rumrunner():
-    Rumrunner.RUMRUNNER_CLASS = _Rumrunner
-
+    Rumrunner.MOCK = False
 
 
 if __name__ == '__main__':
