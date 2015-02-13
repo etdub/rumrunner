@@ -30,7 +30,8 @@ class Rumrunner(object):
         self.send_socket.set_hwm(hwm)
         self.send_socket.connect('ipc://{0}'.format(self.metric_socket))
         self.send_socket.setsockopt(zmq.LINGER, 0)
-        self.test_socket_writable(strict_check_socket)
+        if strict_check_socket:
+            self.test_socket_writable(strict_check_socket)
 
     def __new__(cls, *args, **kwargs):
         if cls.MOCK:
@@ -43,10 +44,7 @@ class Rumrunner(object):
         try:
             tracker.wait(3)
         except zmq.NotDone:
-            if strict:
-                raise Exception('Metric socket not writable')
-            else:
-                logger.warn("Metric socket not writable")
+            raise Exception('Metric socket not writable')
 
     def counter(self, metric_name, value=1):
         return self.send(metric_name, value, 'COUNTER')
