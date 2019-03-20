@@ -12,7 +12,7 @@ setup(
     ],
     url='https://github.com/etdub/rumrunner',
     license='Apache License 2.0',
-    classifiers=(
+    classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Programming Language :: Python',
@@ -20,5 +20,5 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'License :: OSI Approved :: Apache Software License',
-    ),
+    ],
 )
