@@ -40,7 +40,7 @@ class Rumrunner(object):
             return super(Rumrunner, cls).__new__(cls)
 
     def test_socket_writable(self, strict):
-        tracker = self.send_socket.send('', copy=False, track=True)
+        tracker = self.send_socket.send(''.encode('utf-8'), copy=False, track=True)
         try:
             tracker.wait(3)
         except zmq.NotDone:
@@ -59,9 +59,9 @@ class Rumrunner(object):
         try:
             datapoint = [self.app_name, metric_name, metric_type, value]
             if self.block:
-                self.send_socket.send(json.dumps(datapoint))
+                self.send_socket.send(json.dumps(datapoint).encode('utf-8'))
             else:
-                self.send_socket.send(json.dumps(datapoint), zmq.NOBLOCK)
+                self.send_socket.send(json.dumps(datapoint).encode('utf-8'), zmq.NOBLOCK)
             return True
         except zmq.error.Again as e:
             # Failed to send message
@@ -93,16 +93,15 @@ def mock_rumrunner():
 def unmock_rumrunner():
     Rumrunner.MOCK = False
 
-
 if __name__ == '__main__':
     m = Rumrunner('/var/tmp/metric_socket', 'test.app')
     s = time.time()
     for x in range(1000):
         if x % 100 == 0:
-            print x
+            print(x)
         m.counter('test_counter', 1)
         m.gauge('test_gauge', x)
         m.percentile('test_percentile.', x)
         time.sleep(0.000001)
     e = time.time()
-    print "Took {0:.3f}s".format(e-s)
+    print("Took {0:.3f}s".format(e-s))
