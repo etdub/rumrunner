@@ -40,11 +40,17 @@ class Rumrunner(object):
             return super(Rumrunner, cls).__new__(cls)
 
     def test_socket_writable(self, strict):
+        if hasattr(zmq, 'COPY_THRESHOLD'):
+            # Disable copy_threshold in order to allow copy=False, track=True
+            # to work after pyzmq 17.0.0
+            self.send_socket.copy_threshold = 0
         tracker = self.send_socket.send(''.encode('utf-8'), copy=False, track=True)
         try:
             tracker.wait(3)
         except zmq.NotDone:
             raise Exception('Metric socket not writable')
+        if hasattr(zmq, 'COPY_THRESHOLD'):
+            self.send_socket.copy_threshold = zmq.COPY_THRESHOLD
 
     def counter(self, metric_name, value=1):
         return self.send(metric_name, value, 'COUNTER')
